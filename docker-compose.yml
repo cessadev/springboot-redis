@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  oracle-db:
+    container_name: oracle-xe
+    image: gvenzl/oracle-xe:18.4.0-slim
+    environment:
+      - ORACLE_PASSWORD=admin
+    ports:
+      - "1521:1521"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+    healthcheck:
+      test: ["CMD", "sqlplus", "-L", "system/admin@//localhost:1521/db_product", "<", "/dev/null"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  redis:
+    container_name: redis
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+
+volumes:
+  oracle-data:
