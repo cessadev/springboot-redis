@@ -1,20 +1,23 @@
 version: '3.8'
 
 services:
-  oracle-db:
-    container_name: oracle-xe
-    image: gvenzl/oracle-xe:18.4.0-slim
+  postgres:
+    image: postgres:15-alpine3.19
+    container_name: postgres
     environment:
-      - ORACLE_PASSWORD=admin
+      POSTGRES_USER: cessadev
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: test_db
     ports:
-      - "1521:1521"
+      - "5432:5432"
     volumes:
-      - oracle-data:/opt/oracle/oradata
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD", "sqlplus", "-L", "system/admin@//localhost:1521/db_product", "<", "/dev/null"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
+      test: [ "CMD-SHELL", "pg_isready -U cessadev -d test_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
     container_name: redis
@@ -26,4 +29,4 @@ services:
       interval: 5s
 
 volumes:
-  oracle-data:
+  postgres_data:
