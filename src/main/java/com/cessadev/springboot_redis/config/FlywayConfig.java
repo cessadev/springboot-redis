@@ -11,47 +11,19 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 public class FlywayConfig {
 
-  @Value("${spring.flyway.url}")
-  private String flywayUrl;
-
-  @Value("${spring.flyway.user}")
-  private String flywayUser;
-
-  @Value("${spring.flyway.password}")
-  private String flywayPassword;
-
-  @Value("${spring.flyway.schemas}")
-  private String[] schemas;
-
-  private Flyway flyway;
-
   @Bean
   @Profile("dev")
   public FlywayMigrationStrategy cleanMigrateStrategy() {
     return flyway -> {
-      this.flyway = buildCustomFlyway();
-      this.flyway.clean();
-      this.flyway.migrate();
+      flyway.clean();
+      flyway.migrate();
     };
   }
 
   @Bean
   @Profile("!dev")
   public FlywayMigrationStrategy productionMigrationStrategy() {
-    return flyway -> {
-      this.flyway = buildCustomFlyway();
-      this.flyway.migrate();
-    };
-  }
-
-  private Flyway buildCustomFlyway() {
-    FluentConfiguration configuration = Flyway.configure()
-            .dataSource(flywayUrl, flywayUser, flywayPassword)
-            .schemas(schemas)
-            .cleanDisabled(false)
-            .baselineOnMigrate(true);
-
-    return new Flyway(configuration);
+    return Flyway::migrate;
   }
 
 }

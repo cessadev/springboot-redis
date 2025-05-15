@@ -23,13 +23,10 @@ public class RedisConfig {
     RedisTemplate<String, Object> template = new RedisTemplate<>();
     template.setConnectionFactory(connectionFactory);
 
-    // Usa JSON para serializar valores
     GenericJackson2JsonRedisSerializer jacksonSerializer = new GenericJackson2JsonRedisSerializer();
 
-    // Serializador para claves como texto
     StringRedisSerializer stringSerializer = new StringRedisSerializer();
 
-    // Configura serializadores
     template.setKeySerializer(stringSerializer);
     template.setValueSerializer(jacksonSerializer);
 
